@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF English to Hindi Translator</title>
+    <script async src="https:                                                                                                                              
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        #container {
+            width: 80%;
+            margin: 40px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        #translator {
+            padding: 20px;
+        }
+        #translator input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #translator button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #translator button:hover {
+            background-color: #3e8e41;
+        }
+        #translated-text {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #ad-space {
+            height: 250px;
+            width: 100%;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>PDF English to Hindi Translator</h1>
+        <div id="translator">
+            <input type="file" id="pdf-file" accept=".pdf">
+            <button id="translate-btn">Translate</button>
+            <div id="translated-text"></div>
+        </div>
+        <div id="ad-space">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-app-pub-4363648654528900"
+                 data-ad-slot="7539602684"
+                 data-ad-format="auto"
+                 data-full-width="100%"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+    <script>
+        const pdfFileInput = document.getElementById('pdf-file');
+        const translateBtn = document.getElementById('translate-btn');
+        const translatedTextDiv = document.getElementById('translated-text');
+
+        translateBtn.addEventListener('click', () => {
+            const pdfFile = pdfFileInput.files[0];
+            translatePdf(pdfFile).then(translatedText => {
+                translatedTextDiv.innerText = translatedText;
+            });
+        });
+
+        function translatePdf(pdfFile) {
+            return new Promise((resolve, reject) => {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = '                                                
+                const pdfDoc = pdfjsLib.getDocument(URL.createObjectURL(pdfFile));
+                pdfDoc.promise.then(doc => {
+                    const numPages = doc.numPages;
+                    let text = '';
+                    let pagesProcessed = 0;
+                    for (let i = 1; i <= numPages; i++) {
+                        doc.getPage(i).then(page => {
+                            page.getTextContent().then(textContent => {
+                                text += textContent.items.map(item => item.str).join(' ');
+                                pagesProcessed++;
+                                if (pagesProcessed === numPages) {
+                                    const translationApiUrl = 'https://translation.googleapis.com/language/translate/v2';
+                                    const apiKey = 'YOUR_GOOGLE_TRANSLATE_API_KEY';
+                                    const requestBody = {
+                                        q: text,
+                                        source: 'en',
+                                        target: 'hi',
+                                        format: 'text'
+                                    };
+                                    fetch(`${translationApiUrl}?key=${apiKey}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(requestBody)
+                                    })
+                                    .then(response => response.json())
+                                    .then(data =>
